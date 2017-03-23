@@ -1,19 +1,17 @@
 
-var squareSize = 5;
 
-var xNoOfSquares = 800/squareSize;
-var yNoOfSquares = 600/squareSize;
+var squareSize = 2;
+
+var x_NoOfSquares = 800/squareSize;
+var y_NoOfSquares = 600/squareSize;
 
 var context = null;
 
-var xCurrentIndex = 0;
-var yCurrentIndex = 0;
-
 var visited = [];
-for (var i=0; i<xNoOfSquares; i++)
+for (var i=0; i<x_NoOfSquares; i++)
 {
     var vline = [];
-    for(var j=0; j<yNoOfSquares; j++)
+    for(var j=0; j<y_NoOfSquares; j++)
     {
         vline.push(false);
     }
@@ -21,203 +19,26 @@ for (var i=0; i<xNoOfSquares; i++)
     visited.push(vline);
 }
 
-var qx = [];
-var qy = [];
-
-function goUp()
-{
-    yCurrentIndex--;
-}
-
-function goDown()
-{
-    yCurrentIndex++;
-}
-
-function goLeft()
-{
-    xCurrentIndex--;
-}
-
-function goRight()
-{
-    xCurrentIndex++;
-}
 
 
-function drawNextRect()
-{
-    var availableDirections = [];
-    
-    if(xCurrentIndex > 0 && !visited[xCurrentIndex-1][yCurrentIndex])
-    {
-        var fine = true;
-        if (yCurrentIndex > 0)
-        {
-            if (visited[xCurrentIndex-1][yCurrentIndex-1])
-            {
-                fine = false;
-            }
+var crawlers;
+var interval;
+
+
+function loop(){
+
+    var mustStop = true;
+    for(var i=0;i<crawlers.length; i++){
+        if (!crawlers[i].isStashEmpty()){
+            crawlers[i].drawNextRect(visited);
+            mustStop = false;
         }
-        
-        if (yCurrentIndex < yNoOfSquares-1)
-        {
-            if (visited[xCurrentIndex-1][yCurrentIndex+1])
-            {
-                fine = false;
-            }
-        }
-        
-        if (xCurrentIndex > 1)
-        {
-            if (visited[xCurrentIndex-2][yCurrentIndex])
-            {
-                fine = false;
-            }
-        }
-      
-        if (fine == true)
-        {
-            availableDirections.push(goLeft);
-        }
+
     }
-    
-    if (xCurrentIndex < xNoOfSquares-1 && !visited[xCurrentIndex+1][yCurrentIndex])
-    {
-        var fine = true;
-        
-        if (yCurrentIndex > 0)
-        {
-            if (visited[xCurrentIndex+1][yCurrentIndex-1])
-            {
-                fine = false;
-            }
-        }
-        
-        if (yCurrentIndex < yNoOfSquares-1)
-        {
-            if (visited[xCurrentIndex+1][yCurrentIndex+1])
-            {
-                fine = false;
-            }
-        }
-        
-        if (xCurrentIndex < xNoOfSquares-2)
-        {
-            if (visited[xCurrentIndex+2][yCurrentIndex])
-            {
-                fine = false;
-            }
-        }
-        
-        if (fine == true)
-        {
-            availableDirections.push(goRight);
-        }
-    }
-    
-    if (yCurrentIndex > 0 && !visited[xCurrentIndex][yCurrentIndex-1])
-    {
-        var fine = true;
-        
-        if(xCurrentIndex < xNoOfSquares-1)
-        {
-            if (visited[xCurrentIndex+1][yCurrentIndex-1])
-            {
-                fine = false;
-            }
-        }
-        
-        if(xCurrentIndex > 0)
-        {
-            if (visited[xCurrentIndex-1][yCurrentIndex-1])
-            {
-                fine = false;
-            }
-        }
-        
-        if(yCurrentIndex > 1)
-        {
-            if (visited[xCurrentIndex][yCurrentIndex-2])
-            {
-                fine = false;
-            }
-        }
-        
-        
-        if (fine == true)
-        {
-            availableDirections.push(goUp);
-        }
-        
-    }
-    
-    if (yCurrentIndex < yNoOfSquares-1 && !visited[xCurrentIndex][yCurrentIndex+1])
-    {
-        var fine = true;
-        
-        if(xCurrentIndex < xNoOfSquares-1)
-        {
-            if (visited[xCurrentIndex+1][yCurrentIndex+1])
-            {
-                fine = false;
-            }
-        }
-        
-        if(xCurrentIndex > 0)
-        {
-            if (visited[xCurrentIndex-1][yCurrentIndex+1])
-            {
-                fine = false;
-            }
-        }
-        
-        if(yCurrentIndex < yNoOfSquares-2 )
-        {
-            if (visited[xCurrentIndex][yCurrentIndex+2])
-            {
-                fine = false;
-            }
-        }
-        
-        
-        if (fine == true)
-        {
-            availableDirections.push(goDown);
-        }
-    }
-    
-    if (availableDirections.length > 0)
-    {
-        var r = Math.floor( Math.random()*100)%availableDirections.length;
-         
-        availableDirections[r]();
-        
-        context.fillStyle="#992200";
-        context.fillRect(xCurrentIndex*squareSize, yCurrentIndex*squareSize, squareSize, squareSize);
-        
-        visited[xCurrentIndex][yCurrentIndex] = true;
-        qx.push(xCurrentIndex);
-        qy.push(yCurrentIndex);
-        
-        setTimeout(drawNextRect,  0);
-        
-    }
-    else
-    {
-        if (qx.length > 0)
-        {
-            context.fillStyle="#FF5500";
-            context.fillRect(xCurrentIndex*squareSize, yCurrentIndex*squareSize, squareSize, squareSize);
-        
-            xCurrentIndex = qx.pop();
-            yCurrentIndex = qy.pop();
-            
-            context.fillRect(xCurrentIndex*squareSize, yCurrentIndex*squareSize, squareSize, squareSize);
-            
-            setTimeout(drawNextRect, 0);
-        }
-        
+
+    if (mustStop){
+        clearInterval(interval);
+        return;
     }
 }
 
@@ -228,7 +49,24 @@ window.onload = function(e){
     
     context.fillStyle="#FF5500";
 
-    drawNextRect();
+    crawlers = []
+
+    for (var i=0;i<x_NoOfSquares/3;i++){
+        crawlers.push(new Crawler(i*3,0));
+        crawlers.push(new Crawler(i*3,y_NoOfSquares-1));
+    }
+
+    for (var i=0;i<y_NoOfSquares/3;i++){
+        crawlers.push(new Crawler(0,i*3));
+        crawlers.push(new Crawler(x_NoOfSquares-1, i*3));
+    }
+
+    for(var i=0;i<crawlers.length; i++){
+        crawlers[i].drawNextRect(visited);
+    }
+
+
+    interval = setInterval(loop, 20);
 }
 
 
