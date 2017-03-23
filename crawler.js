@@ -4,10 +4,12 @@
 
 class Crawler {
 
-    constructor(xStart, yStart) {
+    constructor(xStart, yStart, color) {
 
         this.qx = [];
         this.qy = [];
+
+        this.color = color;
 
         this.xCurrentIndex = xStart;
         this.yCurrentIndex = yStart;
@@ -39,8 +41,8 @@ class Crawler {
 
             availableDirections[r]();
 
-            context.fillStyle="#992200";
-            context.fillRect(this.xCurrentIndex*squareSize, this.yCurrentIndex*squareSize, squareSize, squareSize);
+            context.fillStyle="#888888";
+            context.fillRect(this.xCurrentIndex*Grid.squareSize, this.yCurrentIndex*Grid.squareSize, Grid.squareSize, Grid.squareSize);
 
             visited[this.xCurrentIndex][this.yCurrentIndex] = true;
 
@@ -50,15 +52,15 @@ class Crawler {
         {
             if (this.qx.length > 0)
             {
-                context.fillStyle="#FF5500";
-                context.fillRect(this.xCurrentIndex*squareSize, this.yCurrentIndex*squareSize, squareSize, squareSize);
+                context.fillStyle=this.color;
+                context.fillRect(this.xCurrentIndex*Grid.squareSize, this.yCurrentIndex*Grid.squareSize, Grid.squareSize, Grid.squareSize);
 
                 let p = this.popFromStash();
 
                 this.xCurrentIndex = p.x;
                 this.yCurrentIndex = p.y;
 
-                context.fillRect(this.xCurrentIndex*squareSize, this.yCurrentIndex*squareSize, squareSize, squareSize);
+                context.fillRect(this.xCurrentIndex*Grid.squareSize, this.yCurrentIndex*Grid.squareSize, Grid.squareSize, Grid.squareSize);
             }
 
         }

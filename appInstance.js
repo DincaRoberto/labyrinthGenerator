@@ -1,24 +1,8 @@
 
 
-var squareSize = 2;
 
-var x_NoOfSquares = 800/squareSize;
-var y_NoOfSquares = 600/squareSize;
 
 var context = null;
-
-var visited = [];
-for (var i=0; i<x_NoOfSquares; i++)
-{
-    var vline = [];
-    for(var j=0; j<y_NoOfSquares; j++)
-    {
-        vline.push(false);
-    }
-    
-    visited.push(vline);
-}
-
 
 
 var crawlers;
@@ -30,7 +14,7 @@ function loop(){
     var mustStop = true;
     for(var i=0;i<crawlers.length; i++){
         if (!crawlers[i].isStashEmpty()){
-            crawlers[i].drawNextRect(visited);
+            crawlers[i].drawNextRect(Grid.visited);
             mustStop = false;
         }
 
@@ -42,8 +26,8 @@ function loop(){
     }
 }
 
-window.onload = function(e){ 
-    
+window.onload = function(e){
+
     var a_canvas = document.getElementById("canvas");
     context = a_canvas.getContext("2d");
     
@@ -51,22 +35,35 @@ window.onload = function(e){
 
     crawlers = []
 
-    for (var i=0;i<x_NoOfSquares/3;i++){
-        crawlers.push(new Crawler(i*3,0));
-        crawlers.push(new Crawler(i*3,y_NoOfSquares-1));
+    for (var i=0;i<Grid.x_NoOfSquares/3;i++){
+        crawlers.push(new Crawler(i*3,0, getRandomColor()));
+        crawlers.push(new Crawler(i*3,Grid.y_NoOfSquares-1, getRandomColor()));
     }
 
-    for (var i=0;i<y_NoOfSquares/3;i++){
-        crawlers.push(new Crawler(0,i*3));
-        crawlers.push(new Crawler(x_NoOfSquares-1, i*3));
+    for (var i=0;i<Grid.y_NoOfSquares/3;i++){
+        crawlers.push(new Crawler(0,i*3, getRandomColor()));
+        crawlers.push(new Crawler(Grid.x_NoOfSquares-1, i*3, getRandomColor()));
     }
+
+    // crawlers.push(new Crawler(0,0, getRandomColor()));
+    // crawlers.push(new Crawler(Grid.x_NoOfSquares-1,0, getRandomColor()));
+    // crawlers.push(new Crawler(Grid.x_NoOfSquares-1,Grid.y_NoOfSquares-1, getRandomColor()));
+    // crawlers.push(new Crawler(0,Grid.y_NoOfSquares-1, getRandomColor()));
+    // crawlers.push(new Crawler(Math.floor((Grid.x_NoOfSquares+4)/2),Math.floor((Grid.y_NoOfSquares-4)/2), getRandomColor()));
+    // crawlers.push(new Crawler(Math.floor((Grid.x_NoOfSquares-4)/2),Math.floor((Grid.y_NoOfSquares-4)/2), getRandomColor()));
+    // crawlers.push(new Crawler(Math.floor((Grid.x_NoOfSquares-4)/2),Math.floor((Grid.y_NoOfSquares+4)/2), getRandomColor()));
+    // crawlers.push(new Crawler(Math.floor((Grid.x_NoOfSquares+4)/2),Math.floor((Grid.y_NoOfSquares+4)/2), getRandomColor()));
 
     for(var i=0;i<crawlers.length; i++){
-        crawlers[i].drawNextRect(visited);
+        crawlers[i].drawNextRect(Grid.visited);
     }
 
 
-    interval = setInterval(loop, 20);
+    interval = setInterval(loop, 1);
+}
+
+function getRandomColor() {
+    return '#'+Math.floor(Math.random()*16777215).toString(16);
 }
 
 
